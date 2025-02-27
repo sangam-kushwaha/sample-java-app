@@ -1,6 +1,8 @@
-package src.main.java;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 public class TodoList {
     private List<Task> tasks;
@@ -45,6 +47,37 @@ public class TodoList {
                     task.isCompleted() ? "X" : " ", 
                     task.getDescription());
             }
+        }
+    }
+
+    // Vulnerable method: SQL Injection
+    public void saveToDB(String taskDescription) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/todo", "user", "password");
+            Statement stmt = conn.createStatement();
+            String sql = "INSERT INTO tasks (description) VALUES ('" + taskDescription + "')";
+            stmt.executeUpdate(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Vulnerable method: Command Injection
+    public void executeTask(String taskCommand) {
+        try {
+            Runtime.getRuntime().exec(taskCommand);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Vulnerable method: Path Traversal
+    public String readTaskFile(String fileName) {
+        java.io.File file = new java.io.File("tasks/" + fileName);
+        try {
+            return new String(java.nio.file.Files.readAllBytes(file.toPath()));
+        } catch (Exception e) {
+            return "Error reading file";
         }
     }
 }
