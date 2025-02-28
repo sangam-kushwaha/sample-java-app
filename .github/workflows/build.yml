@@ -44,7 +44,44 @@ jobs:
       with:
         category: "/language:java"
 
-    - name: Check CodeQL Results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: ${{runner.workspace}}/results/java.sarif
+    - name: Evaluate CodeQL Results
+      run: |
+        echo "CodeQL Scan Results:"
+        echo "====================="
+        
+        # Path to the SARIF file
+        SARIF_FILE="${GITHUB_WORKSPACE}/results/java.sarif"
+        
+        if [ ! -f "$SARIF_FILE" ]; then
+          echo "SARIF file not found at $SARIF_FILE"
+          exit 1
+        fi
+        
+        # Count and display critical issues
+        critical_count=$(jq '.runs[].results[] | select(.level == "error" and .properties.problem.severity == "critical") | .ruleId' "$SARIF_FILE" | wc -l)
+        echo "Critical Issues: $critical_count"
+        
+        # Count and display high severity issues
+        high_count=$(jq '.runs[].results[] | select(.level == "error" and .properties.problem.severity == "high") | .ruleId' "$SARIF_FILE" | wc -l)
+        echo "High Severity Issues: $high_count"
+        
+        # Display details of critical and high severity issues
+        echo -e "\nDetailed Critical and High Severity Issues:"
+        jq -r '.runs[].results[] | select(.level == "error" and (.properties.problem.severity == "critical" or .properties.problem.severity == "high")) | "Rule: \(.ruleId)\nSeverity: \(.properties.problem.severity)\nDescription: \(.message.text)\nLocation: \(.locations[0].physicalLocation.artifactLocation.uri):\(.locations[0].physicalLocation.region.startLine)\n"' "$SARIF_FILE"
+        
+        # Count and display medium severity issues
+        medium_count=$(jq '.runs[].results[] | select(.level == "warning" and .properties.problem.severity == "medium") | .ruleId' "$SARIF_FILE" | wc -l)
+        echo -e "\nMedium Severity Issues: $medium_count"
+        
+        # Count and display low severity issues
+        low_count=$(jq '.runs[].results[] | select(.level == "warning" and .properties.problem.severity == "low") | .ruleId' "$SARIF_FILE" | wc -l)
+        echo "Low Severity Issues: $low_count"
+        
+        # Fail the workflow if there are any critical or high severity issues
+        total_high_critical=$((critical_count + high_count))
+        if [ $total_high_critical -gt 0 ]; then
+          echo -e "\n❌ Critical or high severity issues found: $total_high_critical"
+          exit 1
+        else
+          echo -e "\n✅ No critical or high severity issues found"
+        fi
