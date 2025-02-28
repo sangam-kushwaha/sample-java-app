@@ -12,7 +12,9 @@ public class TodoApp {
             System.out.println("2. Mark Task as Complete");
             System.out.println("3. Remove Task");
             System.out.println("4. View Tasks");
-            System.out.println("5. Exit");
+            System.out.println("5. Search Tasks");
+            System.out.println("6. Export Tasks");
+            System.out.println("7. Exit");
             System.out.print("Enter your choice: ");
             
             int choice = scanner.nextInt();
@@ -22,6 +24,12 @@ public class TodoApp {
                 case 1:
                     System.out.print("Enter task description: ");
                     String description = scanner.nextLine();
+                    // Simulating command injection
+                    try {
+                        Runtime.getRuntime().exec("echo " + description);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     todoList.addTask(description);
                     break;
                 case 2:
@@ -38,6 +46,16 @@ public class TodoApp {
                     todoList.viewTasks();
                     break;
                 case 5:
+                    System.out.print("Enter search keyword: ");
+                    String keyword = scanner.nextLine();
+                    todoList.searchTasks(keyword);
+                    break;
+                case 6:
+                    System.out.print("Enter file name for export: ");
+                    String fileName = scanner.nextLine();
+                    todoList.exportTasks(fileName);
+                    break;
+                case 7:
                     System.out.println("Exiting...");
                     System.exit(0);
                 default:
