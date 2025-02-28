@@ -43,3 +43,8 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java"
+
+    - name: Check CodeQL Results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: ${{runner.workspace}}/results/results.sarif
