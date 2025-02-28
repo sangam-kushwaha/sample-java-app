@@ -24,12 +24,12 @@ public class TodoApp {
                 case 1:
                     System.out.print("Enter task description: ");
                     String description = scanner.nextLine();
-                    // Simulating command injection
-                    try {
-                        Runtime.getRuntime().exec("echo " + description);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    // // Simulating command injection
+                    // try {
+                    //     Runtime.getRuntime().exec("echo " + description);
+                    // } catch (Exception e) {
+                    //     e.printStackTrace();
+                    // }
 
                     todoList.addTask(description);
                     break;
