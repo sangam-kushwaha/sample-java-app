@@ -47,4 +47,4 @@ jobs:
     - name: Check CodeQL Results
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: ${{runner.workspace}}/results/results.sarif
+        sarif_file: ${{runner.workspace}}/results/java.sarif
