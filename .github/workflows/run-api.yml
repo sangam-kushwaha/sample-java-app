@@ -2,7 +2,11 @@ name: List CodeQL Analyses
 
 on:
   workflow_dispatch:  # This allows manual triggering
-
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+  security-events: write
 jobs:
   list-analyses:
     runs-on: ubuntu-latest
