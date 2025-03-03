@@ -1,0 +1,20 @@
+name: List CodeQL Analyses
+
+on:
+  workflow_dispatch:  # This allows manual triggering
+
+jobs:
+  list-analyses:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List CodeQL Analyses
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$OWNER/$REPO/code-scanning/analyses" | jq .
